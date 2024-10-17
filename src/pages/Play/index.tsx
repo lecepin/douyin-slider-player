@@ -14,25 +14,46 @@ import {
 } from "antd";
 import { Swiper, SwiperSlide } from "swiper/react";
 import axios from "axios";
+import { useLocalStorageState } from "ahooks";
 import Artplayer from "./Artplayer";
 
 import "swiper/css";
 import "swiper/css/virtual";
 import "./index.css";
 
-export default () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [playlist, setPlaylist] = useState<Array<IPlayListItem>>([]);
+type TProps = {
+  list: any[];
+};
+
+function diffArrays(a1: any, b1: any) {
+  const added = b1.filter((item: any) => !a1.includes(item));
+  const removed = a1.filter((item: any) => !b1.includes(item));
+
+  if (added.length > 0 && removed.length > 0) {
+    return { status: "both", added, removed };
+  } else if (added.length > 0) {
+    return { status: "add", added };
+  } else if (removed.length > 0) {
+    return { status: "del", removed };
+  } else {
+    return { status: "same", added: [], removed: [] };
+  }
+}
+
+export default (props: TProps) => {
   const playIndexRef = useRef<number>();
   const prePlayerVideoRef = useRef<Artplayer>();
   const timePlayerRef = useRef<ITimePlayMap>({});
   const isPlay = useRef(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [items, setItems] = useState(["默认", "学习"]);
+  const [items, setItems] = useState([]);
   const [name, setName] = useState("");
   const [favValue, setFavValue] = useState([]);
   const inputRef = useRef<InputRef>(null);
-  const instanceMap: { [key: number]: Artplayer } = {};
+  const instanceMap = useRef<{ [key: number]: Artplayer }>({});
+  const [host] = useLocalStorageState<string | undefined>("server-host", {
+    defaultValue: "http://localhost:3000",
+  });
 
   const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -64,14 +85,14 @@ export default () => {
     ) {
       timePlayerRef.current[playIndexRef.current] = {
         time: prePlayerVideoRef.current.currentTime,
-        id: playlist[playIndexRef.current].id,
+        id: props.list[playIndexRef.current].id,
       };
 
       prePlayerVideoRef.current.pause?.();
       console.log(timePlayerRef.current);
     }
-
-    const video = instanceMap[index];
+ 
+    const video = instanceMap.current[index];
     if (!video) return;
 
     const videoEl = video.video;
@@ -95,88 +116,86 @@ export default () => {
   };
 
   useEffect(() => {
-    // 取播放清单
-    // setItems
-
-    // 取相应的视频列表
-    axios
-      .get("playlist.json")
-      .then((res) => {
-        setPlaylist(res.data);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    axios.get(host + "/playlists").then((res) => {
+      console.log(
+        res.data?.map((item: any) => ({
+          label: item.name,
+          value: item.id,
+        }))
+      );
+      setItems(
+        res.data?.map((item: any) => ({
+          label: item.name,
+          value: item.id,
+        }))
+      );
+    });
   }, []);
 
   return (
     <>
-      {isLoading ? (
-        <Spin />
-      ) : (
-        <Swiper
-          direction={"vertical"}
-          modules={[Virtual]}
-          spaceBetween={50}
-          virtual
-          onSwiper={(e) => {
-            setTimeout(() => {
-              autoplay(e.activeIndex);
-            }, 50);
-            playIndexRef.current = e.activeIndex;
-          }}
-          onSlideChange={(e) => {
+      <Swiper
+        direction={"vertical"}
+        modules={[Virtual]}
+        spaceBetween={50}
+        virtual
+        onSwiper={(e) => {
+          setTimeout(() => {
             autoplay(e.activeIndex);
-            playIndexRef.current = e.activeIndex;
-          }}
-        >
-          {playlist.map((item, index) => (
-            <SwiperSlide>
-              <Artplayer
-                option={{
-                  url: item.path,
-                  muted: false,
-                  autoplay: true,
-                  pip: false,
-                  autoSize: true,
-                  setting: false,
-                  loop: true,
-                  mutex: true,
-                  fullscreen: true,
-                  fastForward: true,
-                  autoOrientation: true,
-                  layers: [
-                    {
-                      name: "potser",
-                      html: `<button style="opacity: 0.1">收藏</button>`,
-                      tooltip: "Potser Tip",
-                      style: {
-                        position: "absolute",
-                        top: "50px",
-                        right: "50px",
-                      },
-                      click: function () {
-                        // todo: 当前视频的归类清单
-                        // get api
-                        // setFavValue
-                        setIsModalOpen(true);
-                      },
+          }, 1000);
+          playIndexRef.current = e.activeIndex;
+        }}
+        onSlideChange={(e) => {
+          autoplay(e.activeIndex);
+          playIndexRef.current = e.activeIndex;
+        }}
+      >
+        {props.list.map((item, index) => (
+          <SwiperSlide key={item.name}>
+            <Artplayer
+              option={{
+                url: host + item.url,
+                muted: false,
+                autoplay: true,
+                pip: false,
+                autoSize: true,
+                setting: false,
+                loop: true,
+                mutex: true,
+                fullscreen: true,
+                fastForward: true,
+                autoOrientation: true,
+                layers: [
+                  {
+                    name: "potser",
+                    html: `<button style="opacity: 0.1">收藏</button>`,
+                    tooltip: "Potser Tip",
+                    style: {
+                      position: "absolute",
+                      top: "50px",
+                      right: "50px",
                     },
-                  ],
-                }}
-                style={{
-                  width: "100vw",
-                  height: "100vh",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                getInstance={(art: Artplayer) => (instanceMap[index] = art)}
-              />
-              <div className="title">{item.title}</div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      )}
+                    click: function () {
+                      setFavValue(item.lists.map((it: any) => it.id));
+                      setIsModalOpen(true);
+                    },
+                  },
+                ],
+              }}
+              style={{
+                width: "100vw",
+                height: "100vh",
+                display: "flex",
+                alignItems: "center",
+              }}
+              getInstance={(art: Artplayer) =>
+                (instanceMap.current[index] = art)
+              }
+            />
+            <div className="title">{item.name}</div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
 
       <Modal
         title="播放清单"
@@ -208,10 +227,26 @@ export default () => {
           )}
           value={favValue}
           onChange={(value) => {
+            const { status, removed, added } = diffArrays(favValue, value);
             setFavValue(value);
-            // todo: 更新 api
+
+            if (status === "add") {
+              axios.post(
+                host +
+                  `/playlists/${added[0]}/videos/${
+                    props.list[playIndexRef.current!].name
+                  }`
+              );
+            } else if (status === "del") {
+              axios.delete(
+                host +
+                  `/playlists/${removed[0]}/videos/${
+                    props.list[playIndexRef.current!].name
+                  }`
+              );
+            }
           }}
-          options={items.map((item) => ({ label: item, value: item }))}
+          options={items}
         />
       </Modal>
     </>

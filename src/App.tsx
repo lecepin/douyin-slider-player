@@ -1,21 +1,26 @@
-import { useEffect, useState } from "react";
-import { Button, Flex } from "antd";
+import { Button, Flex, Space, Input } from "antd";
+import { PlaySquareOutlined, OrderedListOutlined } from "@ant-design/icons";
+import { useLocalStorageState } from "ahooks";
+
 import Play from "./pages/Play";
+import List from "./pages/List";
+import Video from "./pages/Video";
+import useQueryParams from "./hooks/useQueryParams";
 
 export default () => {
-  const [page, setPage] = useState("");
+  const [host, setHost] = useLocalStorageState<string | undefined>(
+    "server-host",
+    {
+      defaultValue: "http://localhost:3000",
+    }
+  );
+  const [qs, setQs] = useQueryParams();
 
-  useEffect(() => {
-    const backFn = () => {
-      setPage("");
-    };
+  const setPageAndPush = (page: string) => {
+    setQs({ page });
+  };
+  const page = qs.page || "";
 
-    window.addEventListener("popstate", backFn);
-
-    return () => {
-      window.removeEventListener("popstate", backFn);
-    };
-  }, []);
   return (
     <>
       {!page && (
@@ -30,21 +35,46 @@ export default () => {
             boxSizing: "border-box",
           }}
         >
-          <Button block>清单列表</Button>
-          <Button block>视频列表</Button>
           <Button
+            size="large"
+            color="primary"
+            variant="outlined"
             block
+            icon={<OrderedListOutlined />}
             onClick={() => {
-              setPage("video");
-              window.history.pushState(null, "", "?" + Math.random());
+              setPageAndPush("list");
             }}
           >
-            全部播放
+            清单列表
           </Button>
+          <Button
+            size="large"
+            color="primary"
+            variant="outlined"
+            block
+            icon={<PlaySquareOutlined />}
+            onClick={() => {
+              setPageAndPush("video");
+            }}
+          >
+            视频列表
+          </Button>
+
+          <br />
+          <Space.Compact>
+            <Input
+              addonBefore="服务器地址"
+              placeholder="请输入服务器地址"
+              value={host}
+              onChange={(e) => setHost(e.target.value)}
+            />
+          </Space.Compact>
         </Flex>
       )}
 
-      {page === "video" && <Play />}
+      {page === "play" && <Play />}
+      {page === "list" && <List />}
+      {page === "video" && <Video />}
     </>
   );
 };

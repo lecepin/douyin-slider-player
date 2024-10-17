@@ -2,8 +2,8 @@
 
 interface IPlayListItem {
   id: number;
-  path: string;
-  title: string;
+  url: string;
+  name: string;
   poster: string;
 }
 

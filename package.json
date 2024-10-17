@@ -1,25 +1,33 @@
 {
-  "name": "@ice/lite-scaffold",
-  "version": "0.1.0",
-  "description": "ice.js 3 lite 模板",
+  "name": "vite-v-douyin-slider",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
   "dependencies": {
-    "@ice/runtime": "^1.0.0",
     "antd": "^5.21.4",
     "artplayer": "^5.1.7",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "axios": "^1.7.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "swiper": "^8.4.6"
   },
   "devDependencies": {
-    "@ice/app": "^3.0.0",
-    "@types/node": "^18.11.17",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0"
-  },
-  "scripts": {
-    "start": "ice start",
-    "build": "ice build"
-  },
-  "private": true,
-  "originTemplate": "@ice/lite-scaffold"
+    "@eslint/js": "^9.11.1",
+    "@types/react": "^18.3.10",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "eslint": "^9.11.1",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.12",
+    "globals": "^15.9.0",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.7.0",
+    "vite": "^5.4.8"
+  }
 }

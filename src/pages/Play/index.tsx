@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+// @ts-ignore
 import { Virtual } from "swiper";
 import {
   Button,
@@ -12,17 +13,18 @@ import {
   type InputRef,
 } from "antd";
 import { Swiper, SwiperSlide } from "swiper/react";
+import axios from "axios";
 import Artplayer from "./Artplayer";
 
 import "swiper/css";
 import "swiper/css/virtual";
-import "./index.less";
+import "./index.css";
 
 export default () => {
   const [isLoading, setIsLoading] = useState(true);
   const [playlist, setPlaylist] = useState<Array<IPlayListItem>>([]);
   const playIndexRef = useRef<number>();
-  const prePlayerVideoRef = useRef<HTMLVideoElement>();
+  const prePlayerVideoRef = useRef<Artplayer>();
   const timePlayerRef = useRef<ITimePlayMap>({});
   const isPlay = useRef(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,7 +32,7 @@ export default () => {
   const [name, setName] = useState("");
   const [favValue, setFavValue] = useState([]);
   const inputRef = useRef<InputRef>(null);
-  const instanceMap = {};
+  const instanceMap: { [key: number]: Artplayer } = {};
 
   const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -55,7 +57,7 @@ export default () => {
     }, 0);
   };
 
-  const autoplay = (_, index) => {
+  const autoplay = (index: number) => {
     if (
       playIndexRef.current !== undefined &&
       prePlayerVideoRef.current?.currentTime
@@ -77,10 +79,12 @@ export default () => {
     if (videoEl.videoHeight / videoEl.videoWidth < 1) {
       const parentEl = videoEl.parentElement;
 
+      if (!parentEl) return;
+
       parentEl.style.transform = `rotate(90deg)`;
       parentEl.style.width = window.innerHeight + "px";
       parentEl.style.height = window.innerWidth + "px";
-      parentEl.parentElement.style.width = "unset";
+      parentEl.parentElement!.style.width = "unset";
     }
 
     video.currentTime = timePlayerRef.current[index]?.time || 0;
@@ -95,10 +99,10 @@ export default () => {
     // setItems
 
     // 取相应的视频列表
-    fetch("playlist.json")
-      .then((res) => res.json())
+    axios
+      .get("playlist.json")
       .then((res) => {
-        setPlaylist(res);
+        setPlaylist(res.data);
       })
       .finally(() => {
         setIsLoading(false);
@@ -117,12 +121,12 @@ export default () => {
           virtual
           onSwiper={(e) => {
             setTimeout(() => {
-              autoplay(e, e.activeIndex);
+              autoplay(e.activeIndex);
             }, 50);
             playIndexRef.current = e.activeIndex;
           }}
           onSlideChange={(e) => {
-            autoplay(e, e.activeIndex);
+            autoplay(e.activeIndex);
             playIndexRef.current = e.activeIndex;
           }}
         >
@@ -151,7 +155,7 @@ export default () => {
                         top: "50px",
                         right: "50px",
                       },
-                      click: function (...args) {
+                      click: function () {
                         // todo: 当前视频的归类清单
                         // get api
                         // setFavValue
@@ -166,7 +170,7 @@ export default () => {
                   display: "flex",
                   alignItems: "center",
                 }}
-                getInstance={(art) => (instanceMap[index] = art)}
+                getInstance={(art: Artplayer) => (instanceMap[index] = art)}
               />
               <div className="title">{item.title}</div>
             </SwiperSlide>

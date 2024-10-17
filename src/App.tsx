@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Flex } from "antd";
-import Play from "./Play";
+import Play from "./pages/Play";
 
 export default () => {
   const [page, setPage] = useState("");
 
   useEffect(() => {
-    const backFn = (e) => {
+    const backFn = () => {
       setPage("");
     };
 

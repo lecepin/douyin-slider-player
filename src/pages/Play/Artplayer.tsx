@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import Artplayer from "artplayer";
 
+// @ts-ignore
 export default function Player({ option, getInstance, ...rest }) {
   const artRef = useRef(null);
 

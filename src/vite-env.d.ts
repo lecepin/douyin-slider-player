@@ -1,4 +1,4 @@
-/// <reference types="@ice/app/types" />
+/// <reference types="vite/client" />
 
 interface IPlayListItem {
   id: number;

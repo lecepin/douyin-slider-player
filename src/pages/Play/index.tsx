@@ -9,7 +9,6 @@ import {
   Space,
   Modal,
   message,
-  Spin,
   type InputRef,
 } from "antd";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -59,23 +58,30 @@ export default (props: TProps) => {
     setName(event.target.value);
   };
 
+  const getItems = () => {
+    axios.get(host + "/playlists").then((res) => {
+      setItems(
+        res.data?.map((item: any) => ({
+          label: item.name,
+          value: item.id,
+        }))
+      );
+    });
+  };
+
   const addItem = (
     e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
   ) => {
     e.preventDefault();
-
-    if (items.includes(name)) {
-      message.warning("重复名称");
-      return;
-    }
-
-    // todo: 更新 api
-
-    setItems([...items, name]);
-    setName("");
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
+    axios
+      .post(host + "/playlists", { name })
+      .then(() => {
+        setName("");
+        getItems();
+      })
+      .catch((e) => {
+        message.error(e.message);
+      });
   };
 
   const autoplay = (index: number) => {
@@ -91,7 +97,7 @@ export default (props: TProps) => {
       prePlayerVideoRef.current.pause?.();
       console.log(timePlayerRef.current);
     }
- 
+
     const video = instanceMap.current[index];
     if (!video) return;
 
@@ -116,20 +122,7 @@ export default (props: TProps) => {
   };
 
   useEffect(() => {
-    axios.get(host + "/playlists").then((res) => {
-      console.log(
-        res.data?.map((item: any) => ({
-          label: item.name,
-          value: item.id,
-        }))
-      );
-      setItems(
-        res.data?.map((item: any) => ({
-          label: item.name,
-          value: item.id,
-        }))
-      );
-    });
+    getItems();
   }, []);
 
   return (

@@ -23,7 +23,7 @@ export default () => {
       .catch((e) => {
         message.error(e.message);
       });
-  }, []);
+  }, [qs?.play]);
 
   return (
     <div className="p10px">

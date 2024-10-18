@@ -64,7 +64,7 @@ export default () => {
                 okText="Yes"
                 cancelText="No"
               >
-                <Button color="danger" variant="link">
+                <Button color="danger" variant="link" disabled>
                   删除
                 </Button>
               </Popconfirm>,

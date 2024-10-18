@@ -25,3 +25,5 @@ pnpm-debug.log*
 .ice
 .faas_debug_tmp
 .severless
+
+dist

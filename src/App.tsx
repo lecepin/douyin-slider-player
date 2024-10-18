@@ -2,7 +2,6 @@ import { Button, Flex, Space, Input } from "antd";
 import { PlaySquareOutlined, OrderedListOutlined } from "@ant-design/icons";
 import { useLocalStorageState } from "ahooks";
 
-import Play from "./pages/Play";
 import List from "./pages/List";
 import Video from "./pages/Video";
 import useQueryParams from "./hooks/useQueryParams";
@@ -72,7 +71,6 @@ export default () => {
         </Flex>
       )}
 
-      {page === "play" && <Play />}
       {page === "list" && <List />}
       {page === "video" && <Video />}
     </>

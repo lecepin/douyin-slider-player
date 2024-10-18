@@ -26,4 +26,4 @@ pnpm-debug.log*
 .faas_debug_tmp
 .severless
 
-dist
+/dist

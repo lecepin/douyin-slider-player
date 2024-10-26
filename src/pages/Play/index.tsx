@@ -104,14 +104,18 @@ export default (props: TProps) => {
     const videoEl = video.video;
 
     if (videoEl.videoHeight / videoEl.videoWidth < 1) {
-      const parentEl = videoEl.parentElement;
+      // const parentEl = videoEl.parentElement;
 
-      if (!parentEl) return;
+      // if (!parentEl) return;
 
-      parentEl.style.transform = `rotate(90deg)`;
-      parentEl.style.width = window.innerHeight + "px";
-      parentEl.style.height = window.innerWidth + "px";
-      parentEl.parentElement!.style.width = "unset";
+      // parentEl.style.transform = `rotate(90deg)`;
+      // parentEl.style.width = window.innerHeight + "px";
+      // parentEl.style.height = window.innerWidth + "px";
+      // parentEl.parentElement!.style.width = "unset";
+
+      prompt("native://setOH");
+    } else {
+      prompt("native://setOV");
     }
 
     video.currentTime = timePlayerRef.current[index]?.time || 0;
@@ -155,7 +159,6 @@ export default (props: TProps) => {
                 setting: false,
                 loop: true,
                 mutex: true,
-                fullscreen: true,
                 fastForward: true,
                 autoOrientation: true,
                 layers: [
@@ -171,6 +174,22 @@ export default (props: TProps) => {
                     click: function () {
                       setFavValue(item.lists.map((it: any) => it.id));
                       setIsModalOpen(true);
+                    },
+                  },
+                ],
+                controls: [
+                  {
+                    position: "right",
+                    html: "方向",
+                    style: {
+                      marginRight: "1em",
+                    },
+                    click: function () {
+                      if (prompt("native://getO") === "1") {
+                        prompt("native://setOH");
+                      } else {
+                        prompt("native://setOV");
+                      }
                     },
                   },
                 ],

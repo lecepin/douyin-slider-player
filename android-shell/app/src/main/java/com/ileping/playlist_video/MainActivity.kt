@@ -2,10 +2,12 @@ package com.ileping.playlist_video
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.ViewGroup
+import android.webkit.JsPromptResult
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -14,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
@@ -43,7 +46,41 @@ class MainActivity : AppCompatActivity() {
                 allowUniversalAccessFromFileURLs = true
             }
             webViewClient = WebViewClient()
-            webChromeClient = WebChromeClient()
+            webChromeClient = object : WebChromeClient() {
+                override fun onJsPrompt(
+                    view: WebView?,
+                    url: String?,
+                    message: String?,
+                    defaultValue: String?,
+                    result: JsPromptResult?
+                ): Boolean {
+                    val uri = Uri.parse(message)
+                    if (url != null && message != null) {
+                        if (message.startsWith("native://")) {
+
+                            when (uri.host) {
+                                "getO" -> {
+                                    result?.confirm(resources.configuration.orientation.toString())
+                                }
+
+                                "setOV" -> {
+                                    result?.cancel()
+                                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                                }
+
+                                "setOH" -> {
+                                    result?.cancel()
+                                    requestedOrientation =
+                                        ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                                }
+                            }
+                            return true
+                        }
+                    }
+                    return super.onJsPrompt(view, url, message, defaultValue, result)
+                }
+            }
+
 
             loadUrl("file:///android_asset/index.html")
         }
@@ -58,6 +95,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         if (webView.canGoBack()) {
             webView.goBack()
         } else if (System.currentTimeMillis() - _exitTime > 2000) {

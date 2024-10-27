@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { message, List, Button } from "antd";
+import { message, List, Button, Input } from "antd";
 import { useLocalStorageState } from "ahooks";
 import axios from "axios";
 
@@ -12,13 +12,16 @@ export default () => {
   });
   const [qs, setQs] = useQueryParams();
   const [list, setList] = useState<any[]>([]);
-  const [playList, setPlayList] = useState<any[]>([]);
+  const [searchList, setSearchList] = useState<any[]>([]);
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [playIndex, setPlayIndex] = useState(0);
 
   useEffect(() => {
     axios
       .get(host + "/videos?listId=" + (qs.listId || ""))
       .then((res) => {
         setList(res.data);
+        setSearchList(res.data);
       })
       .catch((e) => {
         message.error(e.message);
@@ -29,30 +32,31 @@ export default () => {
     <div className="p10px">
       {qs?.play !== "1" ? (
         <div>
-          <Button
-            type="primary"
-            onClick={() => {
-              setPlayList(list);
-              setQs({
-                play: "1",
-              });
+          <Input
+            addonBefore="搜索"
+            placeholder="输入新列表项"
+            value={searchValue}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+              setSearchList(
+                list.filter((item) =>
+                  item.name.toLowerCase().includes(e.target.value.toLowerCase())
+                )
+              );
             }}
-          >
-            播放全部
-          </Button>
-
+          />
           <List
             className="mt10px"
             bordered
             size="small"
             itemLayout="horizontal"
-            dataSource={list}
-            renderItem={(item) => (
+            dataSource={searchList}
+            renderItem={(item, index) => (
               <List.Item>
                 <div
                   className="flex-grow-1"
                   onClick={() => {
-                    setPlayList([item]);
+                    setPlayIndex(index);
                     setQs({
                       play: "1",
                     });
@@ -65,7 +69,7 @@ export default () => {
           />
         </div>
       ) : (
-        <Play list={playList} />
+        <Play list={list} index={playIndex} />
       )}
     </div>
   );

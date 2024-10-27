@@ -5,6 +5,7 @@ import { useLocalStorageState } from "ahooks";
 import List from "./pages/List";
 import Video from "./pages/Video";
 import useQueryParams from "./hooks/useQueryParams";
+import { useEffect, useState } from "react";
 
 export default () => {
   const [host, setHost] = useLocalStorageState<string | undefined>(
@@ -19,9 +20,15 @@ export default () => {
     setQs({ page });
   };
   const page = qs.page || "";
+  const [ver, setVer] = useState<any>();
+
+  useEffect(() => {
+    setVer(prompt("native://getVer"));
+  }, []);
 
   return (
     <>
+    <div className="bg" />
       {!page && (
         <Flex
           vertical
@@ -68,6 +75,8 @@ export default () => {
               onChange={(e) => setHost(e.target.value)}
             />
           </Space.Compact>
+          <br />
+          <div className="text-center font-size-3">Ver: {ver}</div>
         </Flex>
       )}
 

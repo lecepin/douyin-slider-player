@@ -22,6 +22,7 @@ import "./index.css";
 
 type TProps = {
   list: any[];
+  index?: number;
 };
 
 function diffArrays(a1: any, b1: any) {
@@ -53,6 +54,7 @@ export default (props: TProps) => {
   const [host] = useLocalStorageState<string | undefined>("server-host", {
     defaultValue: "http://localhost:3000",
   });
+  const swiperRef = useRef<any>();
 
   const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -126,6 +128,13 @@ export default (props: TProps) => {
   };
 
   useEffect(() => {
+    if (swiperRef.current && props.index) {
+      swiperRef.current.slideTo(props.index);
+    }
+  }, [swiperRef.current, props.index]);
+
+  useEffect(() => {
+    prompt("native://setFull");
     getItems();
   }, []);
 
@@ -137,6 +146,7 @@ export default (props: TProps) => {
         spaceBetween={50}
         virtual
         onSwiper={(e) => {
+          swiperRef.current = e;
           setTimeout(() => {
             autoplay(e.activeIndex);
           }, 1000);

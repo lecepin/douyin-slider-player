@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.webkit.JsPromptResult
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -73,6 +74,23 @@ class MainActivity : AppCompatActivity() {
                                     requestedOrientation =
                                         ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                                 }
+
+                                "setFull" -> {
+                                    result?.cancel()
+                                    window.setFlags(
+                                        WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                                        WindowManager.LayoutParams.FLAG_FULLSCREEN
+                                    )
+                                }
+
+                                "getVer" -> {
+                                    result?.confirm(
+                                        packageManager.getPackageInfo(
+                                            context.packageName,
+                                            0
+                                        ).versionName
+                                    )
+                                }
                             }
                             return true
                         }
@@ -82,7 +100,8 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            loadUrl("file:///android_asset/index.html")
+//            loadUrl("file:///android_asset/index.html")
+            loadUrl("http://192.168.0.100:5173/")
         }
 
         findViewById<LinearLayout>(R.id.main_container).addView(
@@ -96,6 +115,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
 
         if (webView.canGoBack()) {
             webView.goBack()

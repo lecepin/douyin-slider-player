@@ -43,4 +43,5 @@
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   z-index: 99999;
   pointer-events: none;
+  opacity: 0.5;
 }

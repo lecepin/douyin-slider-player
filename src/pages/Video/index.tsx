@@ -21,7 +21,9 @@ export default () => {
       .get(host + "/videos?listId=" + (qs.listId || ""))
       .then((res) => {
         setList(res.data);
-        setSearchList(res.data);
+        if (!searchList.length) {
+          setSearchList(res.data);
+        }
       })
       .catch((e) => {
         message.error(e.message);
@@ -69,7 +71,7 @@ export default () => {
           />
         </div>
       ) : (
-        <Play list={list} index={playIndex} />
+        <Play list={searchList} index={playIndex} />
       )}
     </div>
   );

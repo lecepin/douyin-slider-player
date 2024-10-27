@@ -100,8 +100,7 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-//            loadUrl("file:///android_asset/index.html")
-            loadUrl("http://192.168.0.100:5173/")
+            loadUrl("file:///android_asset/index.html")
         }
 
         findViewById<LinearLayout>(R.id.main_container).addView(

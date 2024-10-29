@@ -91,6 +91,10 @@ class MainActivity : AppCompatActivity() {
                                         ).versionName
                                     )
                                 }
+
+                                "getWebviewVer" -> {
+                                    result?.confirm(WebView.getCurrentWebViewPackage()?.versionName)
+                                }
                             }
                             return true
                         }

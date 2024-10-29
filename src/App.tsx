@@ -21,14 +21,16 @@ export default () => {
   };
   const page = qs.page || "";
   const [ver, setVer] = useState<any>();
+  const [webViewVer, setWebViewVer] = useState<any>();
 
   useEffect(() => {
     setVer(prompt("native://getVer"));
+    setWebViewVer(prompt("native://getWebviewVer"));
   }, []);
 
   return (
     <>
-    <div className="bg" />
+      <div className="bg" />
       {!page && (
         <Flex
           vertical
@@ -77,6 +79,9 @@ export default () => {
           </Space.Compact>
           <br />
           <div className="text-center font-size-3">Ver: {ver}</div>
+          <div className="text-center font-size-3">
+            Webview Ver: {webViewVer}
+          </div>
         </Flex>
       )}
 

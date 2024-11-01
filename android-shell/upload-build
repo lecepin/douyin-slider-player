@@ -1,6 +1,6 @@
 #!/bin/bash
 
-packsDir="./packs"
+packsDir="./app/build/outputs/apk/debug"
 dmgFile=""
 fileExtension="apk"
 

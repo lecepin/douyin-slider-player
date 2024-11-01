@@ -30,6 +30,7 @@ const copy = (source, target) => {
     files.forEach((file) => {
       const curSource = path.join(source, file);
       const curTarget = path.join(target, file);
+      console.log("---> " + curSource);
       copy(curSource, curTarget);
     });
   } else {

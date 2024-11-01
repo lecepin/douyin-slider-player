@@ -3,7 +3,7 @@ body {
 }
 
 .bg {
-  background: url(bg.webp) center no-repeat;
+  background: url(/bg.webp) center no-repeat;
   background-size: cover;
   min-height: 100vh;
   position: fixed;

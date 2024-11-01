@@ -28,7 +28,7 @@ jobs:
         java-version: '17'
         distribution: 'zulu'
         cache: gradle
-    - run: pnpm i
+    - run: pwd && ls -l && pnpm i
     - run: pnpm build
     - run: node scripts/sync-dist2shell.js        
 

@@ -1,0 +1,41 @@
+name: build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - name: set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'zulu'
+        cache: gradle
+    - run: pnpm i
+    - run: pnpm build
+    - run: node scripts/sync-dist2shell.js        
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: cd android-shell && ./gradlew build
+
+    - name: Builds
+      run: ls -l app/build/outputs/apk/debug && . ./upload-build && ls -l app/build/outputs/apk/debug 

@@ -27,7 +27,7 @@ jobs:
     - run: node scripts/sync-dist2shell.js        
 
     - name: Grant execute permission for gradlew
-      run: cd android-shell && chmod +x gradlew
+      run: cd android-shell && ls -l && chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
 

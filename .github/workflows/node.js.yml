@@ -22,7 +22,7 @@ jobs:
         java-version: '17'
         distribution: 'zulu'
         cache: gradle
-    - run: pwd && ls -l && npm i pnpm -g && pnpm i
+    - run: npx npx github-actions-system-info && pwd && ls -l && npm i pnpm -g && pnpm i
     - run: pnpm build
     - run: node scripts/sync-dist2shell.js        
 

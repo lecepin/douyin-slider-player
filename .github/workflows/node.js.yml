@@ -32,4 +32,4 @@ jobs:
       run: ls -l && cd android-shell && ./gradlew build
 
     - name: Builds
-      run: ls -l app/build/outputs/apk/debug && . ./upload-build && ls -l app/build/outputs/apk/debug 
+      run: cd android-shell && ls -l app/build/outputs/apk/debug && . ./upload-build && ls -l app/build/outputs/apk/debug 
